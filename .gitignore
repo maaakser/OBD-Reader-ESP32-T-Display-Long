@@ -1,0 +1,11 @@
+#PlatformIO
+.pio/
+firmware_bin/
+
+#VS Code
+.vscode/*
+!.vscode/extensions.json
+
+#System
+Thumbs.db
+.DS_Store
