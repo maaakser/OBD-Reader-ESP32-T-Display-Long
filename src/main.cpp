@@ -22,9 +22,8 @@ static lv_color_t *buf1;
 struct hyn_ts_data *ts_data;
 
 // Elementy interfejsu LVGL
-static lv_obj_t *tv = NULL;
-static lv_obj_t *tile_coolant = NULL;
-static lv_obj_t *tile_oil = NULL;
+static lv_obj_t *panel_coolant = NULL;
+static lv_obj_t *panel_oil = NULL;
 
 static lv_obj_t *ui_coolant_val = NULL;
 static lv_obj_t *ui_coolant_bar = NULL;
@@ -153,52 +152,65 @@ void setup_ui(void)
   lv_obj_set_style_bg_color(scr, lv_color_black(), LV_PART_MAIN);
   lv_obj_set_style_bg_opa(scr, LV_OPA_COVER, LV_PART_MAIN);
 
-  // Utworzenie TileView (przesuwane karty lewo/prawo)
-  tv = lv_tileview_create(scr);
-  lv_obj_set_size(tv, 640, 180);
-  lv_obj_set_style_bg_color(tv, lv_color_black(), LV_PART_MAIN);
+  // Ekran podzielony na 2 połowy po 320 px: lewa - płyn, prawa - olej
+  panel_coolant = lv_obj_create(scr);
+  lv_obj_set_size(panel_coolant, 320, 180);
+  lv_obj_set_pos(panel_coolant, 0, 0);
+  lv_obj_set_style_bg_color(panel_coolant, lv_color_black(), LV_PART_MAIN);
+  lv_obj_set_style_border_width(panel_coolant, 0, LV_PART_MAIN);
+  lv_obj_set_style_radius(panel_coolant, 0, LV_PART_MAIN);
+  lv_obj_set_style_pad_all(panel_coolant, 0, LV_PART_MAIN);
+  lv_obj_clear_flag(panel_coolant, LV_OBJ_FLAG_SCROLLABLE);
 
-  // KARTA 1: TEMPERATURA PŁYNU (Pozycja X=0, Y=0)
-  tile_coolant = lv_tileview_add_tile(tv, 0, 0, LV_DIR_HOR);
-  
-  lv_obj_t *badge1 = lv_label_create(tile_coolant);
+  panel_oil = lv_obj_create(scr);
+  lv_obj_set_size(panel_oil, 320, 180);
+  lv_obj_set_pos(panel_oil, 320, 0);
+  lv_obj_set_style_bg_color(panel_oil, lv_color_black(), LV_PART_MAIN);
+  lv_obj_set_style_radius(panel_oil, 0, LV_PART_MAIN);
+  lv_obj_set_style_pad_all(panel_oil, 0, LV_PART_MAIN);
+  lv_obj_clear_flag(panel_oil, LV_OBJ_FLAG_SCROLLABLE);
+  // Pionowa linia oddzielająca połowy
+  lv_obj_set_style_border_width(panel_oil, 2, LV_PART_MAIN);
+  lv_obj_set_style_border_side(panel_oil, LV_BORDER_SIDE_LEFT, LV_PART_MAIN);
+  lv_obj_set_style_border_color(panel_oil, lv_color_hex(0x333333), LV_PART_MAIN);
+
+  // LEWA POŁOWA: TEMPERATURA PŁYNU
+  lv_obj_t *badge1 = lv_label_create(panel_coolant);
   lv_obj_align(badge1, LV_ALIGN_TOP_LEFT, 20, 12);
   lv_obj_set_style_text_color(badge1, lv_color_hex(0x888888), LV_PART_MAIN);
   lv_obj_set_style_text_font(badge1, &font_montserrat_14_pl, LV_PART_MAIN);
-  lv_label_set_text(badge1, "KARTA 1/2  |  PŁYN CHŁODZĄCY -> (przesuń w lewo)");
+  lv_label_set_text(badge1, "PŁYN CHŁODZĄCY");
 
-  ui_coolant_val = lv_label_create(tile_coolant);
-  lv_obj_align(ui_coolant_val, LV_ALIGN_LEFT_MID, 25, 15);
+  ui_coolant_val = lv_label_create(panel_coolant);
+  lv_obj_align(ui_coolant_val, LV_ALIGN_LEFT_MID, 20, -5);
   lv_obj_set_style_text_color(ui_coolant_val, lv_color_hex(0x00E5FF), LV_PART_MAIN);
   lv_obj_set_style_text_font(ui_coolant_val, &font_montserrat_14_pl, LV_PART_MAIN);
   lv_label_set_text(ui_coolant_val, "-- °C");
 
-  ui_coolant_bar = lv_bar_create(tile_coolant);
-  lv_obj_set_size(ui_coolant_bar, 380, 26);
-  lv_obj_align(ui_coolant_bar, LV_ALIGN_RIGHT_MID, -25, 15);
+  ui_coolant_bar = lv_bar_create(panel_coolant);
+  lv_obj_set_size(ui_coolant_bar, 280, 26);
+  lv_obj_align(ui_coolant_bar, LV_ALIGN_BOTTOM_MID, 0, -25);
   lv_bar_set_range(ui_coolant_bar, 40, 120);
   lv_bar_set_value(ui_coolant_bar, 40, LV_ANIM_OFF);
   lv_obj_set_style_bg_color(ui_coolant_bar, lv_color_hex(0x222222), LV_PART_MAIN);
   lv_obj_set_style_bg_color(ui_coolant_bar, lv_color_hex(0x00E5FF), LV_PART_INDICATOR);
 
-  // KARTA 2: TEMPERATURA OLEJU (Pozycja X=1, Y=0)
-  tile_oil = lv_tileview_add_tile(tv, 1, 0, LV_DIR_HOR);
-
-  lv_obj_t *badge2 = lv_label_create(tile_oil);
+  // PRAWA POŁOWA: TEMPERATURA OLEJU
+  lv_obj_t *badge2 = lv_label_create(panel_oil);
   lv_obj_align(badge2, LV_ALIGN_TOP_LEFT, 20, 12);
   lv_obj_set_style_text_color(badge2, lv_color_hex(0x888888), LV_PART_MAIN);
   lv_obj_set_style_text_font(badge2, &font_montserrat_14_pl, LV_PART_MAIN);
-  lv_label_set_text(badge2, "<- (przesuń w prawo)  |  KARTA 2/2  |  OLEJ SILNIKOWY");
+  lv_label_set_text(badge2, "OLEJ SILNIKOWY");
 
-  ui_oil_val = lv_label_create(tile_oil);
-  lv_obj_align(ui_oil_val, LV_ALIGN_LEFT_MID, 25, 15);
+  ui_oil_val = lv_label_create(panel_oil);
+  lv_obj_align(ui_oil_val, LV_ALIGN_LEFT_MID, 20, -5);
   lv_obj_set_style_text_color(ui_oil_val, lv_color_hex(0xFF9900), LV_PART_MAIN);
   lv_obj_set_style_text_font(ui_oil_val, &font_montserrat_14_pl, LV_PART_MAIN);
   lv_label_set_text(ui_oil_val, "-- °C");
 
-  ui_oil_bar = lv_bar_create(tile_oil);
-  lv_obj_set_size(ui_oil_bar, 380, 26);
-  lv_obj_align(ui_oil_bar, LV_ALIGN_RIGHT_MID, -25, 15);
+  ui_oil_bar = lv_bar_create(panel_oil);
+  lv_obj_set_size(ui_oil_bar, 280, 26);
+  lv_obj_align(ui_oil_bar, LV_ALIGN_BOTTOM_MID, 0, -25);
   lv_bar_set_range(ui_oil_bar, 40, 140);
   lv_bar_set_value(ui_oil_bar, 40, LV_ANIM_OFF);
   lv_obj_set_style_bg_color(ui_oil_bar, lv_color_hex(0x222222), LV_PART_MAIN);
