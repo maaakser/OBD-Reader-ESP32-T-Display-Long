@@ -11,6 +11,9 @@
 
 LV_FONT_DECLARE(font_montserrat_14_pl);
 
+// Adres MAC adaptera Veepeak (adres publiczny)
+static BLEAddress adapterMAC("8c:de:52:da:70:3a");
+
 // Nordic UART Service (Veepeak BLE)
 static BLEUUID serviceUUID("6E400001-B5A3-F393-E0A9-E50E24DCCA9E");
 static BLEUUID charRxUUID("6E400002-B5A3-F393-E0A9-E50E24DCCA9E"); // Write
@@ -99,13 +102,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
   void onResult(BLEAdvertisedDevice advertisedDevice) {
     String devName = advertisedDevice.haveName() ? advertisedDevice.getName().c_str() : "";
 
-    bool nameMatch = (devName.indexOf("VEEPEAK") >= 0 || 
-                      devName.indexOf("OBD") >= 0 || 
-                      devName.indexOf("Galaxy") >= 0);
-
-    bool uuidMatch = advertisedDevice.isAdvertisingService(serviceUUID);
-
-    if (nameMatch || uuidMatch) {
+    // Tylko mój adapter Veepeak: zgodny adres MAC i nazwa "VEEPEAK"
+    if (advertisedDevice.getAddress().equals(adapterMAC) && devName == "VEEPEAK") {
       BLEDevice::getScan()->stop();
       targetDevice = new BLEAdvertisedDevice(advertisedDevice);
       doConnect = true;
