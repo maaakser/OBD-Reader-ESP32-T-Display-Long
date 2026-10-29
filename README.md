@@ -13,7 +13,7 @@ Dane pobierane są przez Bluetooth LE z adaptera OBD-II
 
 ## Odczyty BMW (E82, N47, sterownik DDE)
 
-### Inicjalizacja ELM327
+### Inicjalizacja ELM327 (NIE TESTOWANE NA RAZIE)
 Każda komenda osobno, czekać na `>`:
 ```
 ATD
@@ -82,7 +82,7 @@ Data is read over Bluetooth LE from an OBD-II adapter.
 
 ## BMW readings (E82, N47, DDE engine ECU)
 
-### ELM327 initialization
+### ELM327 initialization (NOT TESTED)
 Send each command separately and wait for `>`:
 ```
 ATD
