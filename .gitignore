@@ -9,3 +9,6 @@ firmware_bin/
 #System
 Thumbs.db
 .DS_Store
+
+#Logi z monitora portu
+logs/

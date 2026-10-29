@@ -7,13 +7,14 @@ Dane pobierane są przez Bluetooth LE z adaptera OBD-II
 ## Funkcje
 
 - Automatyczne wyszukiwanie i łączenie tylko z moim adapterem Veepeak (zgodny adres MAC i nazwa `VEEPEAK`, adres ustawiany w `adapterMAC` w `main.cpp`)
-- Odpytywanie PID-ów co 500 ms:
-  - `0105` – temperatura płynu chłodzącego
-  - `015C` – temperatura oleju silnikowego
+- Ekran statusu do momentu połączenia (szukanie, łączenie, inicjalizacja adaptera)
+- Odpytywanie sterownika silnika BMW na zmianę (opis zapytań niżej):
+  - `2C100005` – temperatura płynu chłodzącego
+  - `2C100458` – temperatura oleju silnikowego
 
 ## Odczyty BMW (E82, N47, sterownik DDE)
 
-### Inicjalizacja ELM327 (NIE TESTOWANE NA RAZIE)
+### Inicjalizacja ELM327 
 Każda komenda osobno, czekać na `>`:
 ```
 ATD
@@ -68,7 +69,7 @@ LVGL: [lvgl/lvgl](https://github.com/lvgl/lvgl) (licencja MIT).
 
 
 # ENG
-# OBD_skaner (work in progress)
+# OBD_skaner
 
 Coolant and oil temperature display (for now) on an ESP32 board.
 Data is read over Bluetooth LE from an OBD-II adapter.
@@ -76,9 +77,10 @@ Data is read over Bluetooth LE from an OBD-II adapter.
 ## Features
 
 - Automatic scanning and connection to my Veepeak adapter only (matching MAC address and name `VEEPEAK`; the address is set in `adapterMAC` in `main.cpp`)
-- PID polling every 500 ms:
-  - `0105` – engine coolant temperature
-  - `015C` – engine oil temperature
+- Status screen until connected (searching, connecting, adapter initialization)
+- Alternating requests to the BMW engine ECU (requests described below):
+  - `2C100005` – engine coolant temperature
+  - `2C100458` – engine oil temperature
 
 ## BMW readings (E82, N47, DDE engine ECU)
 
